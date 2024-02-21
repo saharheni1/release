@@ -1,4 +1,5 @@
-import { DomainApi, DomainExample } from "./domainExampleTypes";
+import { DomainApi, DomainExample } from "."
+
 
 function toDomainExample(domainExampleAPI : DomainApi) : DomainExample {
   return {

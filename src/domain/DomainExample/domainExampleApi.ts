@@ -1,5 +1,6 @@
 import { api } from "@api";
-import { DomainApi } from "./domainExampleTypes";
+import { DomainApi } from ".";
+
 
 export const DOMAIN_EXAMPLE_PATH = "domainExample"
 
