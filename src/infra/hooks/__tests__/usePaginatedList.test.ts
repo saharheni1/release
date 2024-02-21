@@ -1,6 +1,8 @@
+import {renderHook, waitFor} from 'test-utils';
+
 import {MetaDataPage, Page} from '@types';
+
 import {usePaginatedList} from '../usePaginatedList';
-import { renderHook, waitFor } from 'test-utils';
 
 const page1 = ['item1', 'item2', 'item3'];
 const page2 = ['item4', 'item5', 'item6'];

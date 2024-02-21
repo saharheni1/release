@@ -1,14 +1,21 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { ThemeProvider } from '@shopify/restyle';
-import { QueryClient, QueryClientConfig, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import {ReactElement} from 'react';
+
+import {NavigationContainer} from '@react-navigation/native';
+import {ThemeProvider} from '@shopify/restyle';
+import {
+  QueryClient,
+  QueryClientConfig,
+  QueryClientProvider,
+} from '@tanstack/react-query';
 import {
   RenderOptions,
   render,
   renderHook,
   RenderHookOptions,
 } from '@testing-library/react-native';
-import { theme } from '@theme';
-import { ReactElement } from 'react';
+
+import {theme} from '@theme';
 
 const queryClientConfig: QueryClientConfig = {
   logger: {
@@ -29,7 +36,6 @@ const queryClientConfig: QueryClientConfig = {
     },
   },
 };
-
 
 export const wrapAllProviders = () => {
   const queryClient = new QueryClient(queryClientConfig);

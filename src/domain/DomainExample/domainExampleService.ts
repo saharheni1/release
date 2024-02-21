@@ -1,6 +1,6 @@
-import { DomainExample, domainExampleAdapter } from ".";
-import { domainExampleApi } from "./domainExampleApi";
+import {domainExampleApi} from './domainExampleApi';
 
+import {DomainExample, domainExampleAdapter} from '.';
 
 async function getDomainExampleValue(id: string): Promise<DomainExample> {
   const domainExampleAPI = await domainExampleApi.getDomainExampleValue(id);
@@ -8,5 +8,5 @@ async function getDomainExampleValue(id: string): Promise<DomainExample> {
 }
 
 export const domainExampleService = {
-  getDomainExampleValue
-}
+  getDomainExampleValue,
+};

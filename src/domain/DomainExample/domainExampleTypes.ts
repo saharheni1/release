@@ -1,4 +1,3 @@
-
 export interface DomainExample {
   id: string;
   fieldExample: string;
@@ -6,5 +5,5 @@ export interface DomainExample {
 
 export interface DomainApi {
   uuid: string;
-  field_example: string; 
+  field_example: string;
 }

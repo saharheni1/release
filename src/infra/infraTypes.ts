@@ -1,3 +1,3 @@
 export enum QueryKeys {
-  DomainExample = 'DomainExample'
+  DomainExample = 'DomainExample',
 }
