@@ -1,1 +1,1 @@
-export {};
+export {ExampleIcon} from './ExampleIcon';

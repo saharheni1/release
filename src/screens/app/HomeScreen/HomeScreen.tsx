@@ -1,12 +1,12 @@
 import React from 'react';
 import {Text} from 'react-native';
 
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {Screen} from '@components';
 
 export function HomeScreen() {
   return (
-    <SafeAreaView>
+    <Screen>
       <Text>HomeScreen</Text>
-    </SafeAreaView>
+    </Screen>
   );
 }
