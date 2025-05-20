@@ -1,0 +1,92 @@
+name: Android Release Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Gradle Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Vérification de la structure du projet
+        run: |
+          echo "Vérification de la structure du projet..."
+          if [ ! -d "android" ]; then
+            echo "Le répertoire 'android' est manquant."
+            exit 1
+          fi
+          if [ ! -f "android/build.gradle" ]; then
+            echo "Le fichier 'android/build.gradle' est manquant."
+            exit 1
+          fi
+          echo "Structure du projet validée."
+
+      - name: Install Android SDK (cmdline-tools)
+        run: |
+          echo "Installation du SDK Android..."
+          mkdir -p android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O sdk.zip
+          unzip sdk.zip -d tmp-sdk
+          mv tmp-sdk/cmdline-tools android-sdk/cmdline-tools/latest
+          rm -rf tmp-sdk sdk.zip
+          echo "ANDROID_HOME=$PWD/android-sdk" >> $GITHUB_ENV
+          echo "$PWD/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$PWD/android-sdk/platform-tools" >> $GITHUB_PATH
+          echo "ANDROID_SDK_ROOT=$PWD/android-sdk" >> $GITHUB_ENV
+
+      - name: Accepter les licences SDK et installer les composants nécessaires
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          sdkmanager --update
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Configurer le keystore de release
+        run: |
+          echo "Décodage du keystore..."
+          cat my-release-key.keystore.txt | base64 -d > android/app/my-release-key.keystore
+          
+          echo "Configuration des variables de keystore dans gradle.properties..."
+          echo "MYAPP_RELEASE_STORE_FILE=my-release-key.keystore" >> android/gradle.properties
+          echo "MYAPP_RELEASE_KEY_ALIAS=my-key-alias" >> android/gradle.properties
+          echo "MYAPP_RELEASE_STORE_PASSWORD=Taheni_11972251" >> android/gradle.properties
+          echo "MYAPP_RELEASE_KEY_PASSWORD=Taheni_11972251" >> android/gradle.properties
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
+        working-directory: android
+
+      - name: Build Release AAB
+        run: ./gradlew bundleRelease -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
+        working-directory: android
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: |
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+          retention-days: 7
