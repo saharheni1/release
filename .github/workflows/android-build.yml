@@ -3,9 +3,9 @@ name: Android Debug Build
   on:
     workflow_dispatch:
     push:
-    branches: [ "main" ]
+      branches: [ "main" ]
     pull_request:
-    branches: [ "main" ]
+      branches: [ "main" ]
   
   jobs:
     build:
@@ -109,7 +109,6 @@ name: Android Debug Build
               sed -i '/ext {/a\        compileSdkVersion = 33' android/build.gradle
             fi
   
-        
         - name: Generate Debug Keystore
           run: |
             if ! keytool -list -v -keystore android/app/debug.keystore -alias androiddebugkey -storepass android > /dev/null 2>&1; then
@@ -126,7 +125,6 @@ name: Android Debug Build
                 -dname "CN=Android Debug,O=Android,C=US" \
                 -deststoretype pkcs12
             fi
-        
   
         - name: Build Debug APK
           run: ./gradlew assembleDebug -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
@@ -138,6 +136,4 @@ name: Android Debug Build
             name: debug-apk
             path: android/app/build/outputs/apk/debug/*.apk
             retention-days: 7
-  
-        
   
