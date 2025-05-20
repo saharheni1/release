@@ -113,6 +113,7 @@ jobs:
             sed -i '/ext {/a\        compileSdkVersion = 33' android/build.gradle
           fi
 
+      
       - name: Générer un keystore de débogage
         run: |
           if ! keytool -list -v -keystore android/app/debug.keystore -alias androiddebugkey -storepass android > /dev/null 2>&1; then
@@ -135,6 +136,7 @@ jobs:
             -keystore android/app/debug.keystore \
             -alias androiddebugkey \
             -storepass android
+      
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
@@ -146,3 +148,5 @@ jobs:
           name: debug-apk
           path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 7
+
+      
