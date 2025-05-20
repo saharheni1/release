@@ -1,4 +1,4 @@
-name: Android Release Build
+name: Android Debug Build
   
   on:
     workflow_dispatch:
@@ -110,35 +110,33 @@ name: Android Release Build
             fi
   
         
-        - name: Setup Release Keystore
+        - name: Generate Debug Keystore
           run: |
-            echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/my-release-key.keystore.txt
-            echo "storeFile=my-release-key.keystore.txt" >> android/key.properties
-            echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
-            echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
-            echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
-            chmod 600 android/app/my-release-key.keystore.txt
-            chmod 600 android/key.properties
-  
-        - name: Configure Release Build
-          run: |
-            echo "Configuring release build..."
-            # Create signing config in build.gradle
-            sed -i '/android {/a\    signingConfigs {\n        release {\n            storeFile file("my-release-key.keystore.txt")\n            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")\n            keyAlias System.getenv("ANDROID_KEY_ALIAS")\n            keyPassword System.getenv("ANDROID_KEY_PASSWORD")\n        }\n    }' android/app/build.gradle
-            
-            # Configure release build type
-            sed -i '/buildTypes {/a\        release {\n            signingConfig signingConfigs.release\n            minifyEnabled true\n            shrinkResources true\n            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"\n        }' android/app/build.gradle
+            if ! keytool -list -v -keystore android/app/debug.keystore -alias androiddebugkey -storepass android > /dev/null 2>&1; then
+              echo "Generating new debug key..."
+              keytool -genkeypair \
+                -v \
+                -keystore android/app/debug.keystore \
+                -alias androiddebugkey \
+                -storepass android \
+                -keypass android \
+                -keyalg RSA \
+                -keysize 2048 \
+                -validity 10000 \
+                -dname "CN=Android Debug,O=Android,C=US" \
+                -deststoretype pkcs12
+            fi
         
   
-        - name: Build Release APK
-          run: ./gradlew assembleRelease -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
+        - name: Build Debug APK
+          run: ./gradlew assembleDebug -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
           working-directory: android
   
         - name: Upload APK artifact
           uses: actions/upload-artifact@v4
           with:
-            name: release-apk
-            path: android/app/build/outputs/apk/release/*.apk
+            name: debug-apk
+            path: android/app/build/outputs/apk/debug/*.apk
             retention-days: 7
   
         
