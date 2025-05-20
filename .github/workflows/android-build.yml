@@ -1,4 +1,4 @@
-name: Android Release Build
+name: Android Debug Build
   
   on:
     workflow_dispatch:
@@ -113,33 +113,39 @@ name: Android Release Build
               sed -i '/ext {/a\        compileSdkVersion = 33' android/build.gradle
             fi
   
-        # Configuration spécifique à la Release
-        - name: Setup Release Keystore
+        # Configuration spécifique au Debug
+        - name: Générer un keystore de débogage
           run: |
-            echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/my-release-key.keystore
-            echo "storeFile=my-release-key.keystore" >> android/key.properties
-            echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
-            echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
-            echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
-            chmod 600 android/app/my-release-key.keystore
-            chmod 600 android/key.properties
-  
-        - name: Activer la minification pour la Release
-          run: |
-            if ! grep -q "minifyEnabled true" android/app/build.gradle; then
-              echo "Enabling minification for release"
-              sed -i '/buildTypes {/a\        release {\n            minifyEnabled true\n            shrinkResources true\n            proguardFiles getDefaultProguardFile(\"proguard-android-optimize.txt\"), \"proguard-rules.pro\"\n        }' android/app/build.gradle
+            if ! keytool -list -v -keystore android/app/debug.keystore -alias androiddebugkey -storepass android > /dev/null 2>&1; then
+              echo "Génération d'une nouvelle clé de débogage..."
+              keytool -genkeypair \
+                -v \
+                -keystore android/app/debug.keystore \
+                -alias androiddebugkey \
+                -storepass android \
+                -keypass android \
+                -keyalg RSA \
+                -keysize 2048 \
+                -validity 10000 \
+                -dname "CN=Android Debug,O=Android,C=US" \
+                -deststoretype pkcs12
+            else
+              echo "La clé androiddebugkey existe déjà. Aucune action requise."
             fi
+            keytool -list -v \
+              -keystore android/app/debug.keystore \
+              -alias androiddebugkey \
+              -storepass android
   
-        - name: Build Release APK
-          run: ./gradlew assembleRelease -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
+        - name: Build Debug APK
+          run: ./gradlew assembleDebug -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
           working-directory: android
   
         - name: Upload APK artifact
           uses: actions/upload-artifact@v4
           with:
-            name: release-apk
-            path: android/app/build/outputs/apk/release/*.apk
+            name: debug-apk
+            path: android/app/build/outputs/apk/debug/*.apk
             retention-days: 7
   
         
