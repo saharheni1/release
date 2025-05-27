@@ -1,5 +1,5 @@
-name: Android Debug Build
-  
+name: Android Release Build
+
 on:
   workflow_dispatch:
   push:
@@ -136,13 +136,18 @@ jobs:
             -alias androiddebugkey \
             -storepass android
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
+      - name: Build Release APK with debug signing (for testing)
+        run: ./gradlew assembleRelease -PUSE_DEBUG_SIGNING=true -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
         working-directory: android
 
-      - name: Upload APK artifact
+      # If you want real release signing, comment the above step and uncomment this one:
+      # - name: Build Release APK with real signing
+      #   run: ./gradlew assembleRelease -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m" --no-daemon
+      #   working-directory: android
+
+      - name: Upload Release APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: release-apk
+          path: android/app/build/outputs/apk/release/*.apk
           retention-days: 7
