@@ -40,19 +40,19 @@ android {
         }
     }
 
-    buildTypes {
+     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
-            shrinkResources true
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-        }
-    }
+    signingConfig signingConfigs.release
+    shrinkResources true
+    minifyEnabled enableProguardInReleaseBuilds
+    proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+    isDebuggable false
 }
 
+    }
 dependencies {
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
