@@ -33,26 +33,26 @@ android {
         }
         release {
             storeFile file("release.keystore")
-            // Use environment variables for sensitive info; fallback to empty string if not set
             storePassword System.getenv("KEYSTORE_PASSWORD") ?: ""
             keyAlias System.getenv("KEY_ALIAS") ?: ""
             keyPassword System.getenv("KEY_PASSWORD") ?: ""
         }
     }
 
-     buildTypes {
+    buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-    signingConfig signingConfigs.release
-    shrinkResources true
-    minifyEnabled enableProguardInReleaseBuilds
-    proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-    isDebuggable false
+            signingConfig signingConfigs.release
+            shrinkResources true
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            isDebuggable false
+        }
+    }
 }
 
-    }
 dependencies {
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
