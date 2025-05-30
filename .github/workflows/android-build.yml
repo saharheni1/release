@@ -99,11 +99,11 @@ name: Android Debug Build
               npm install
             fi
   
-        - name: Set up JDK 17
+        - name: Set up JDK undefined
           uses: actions/setup-java@v3
           with:
             distribution: 'temurin'
-            java-version: '17'
+            java-version: 'undefined'
             cache: 'gradle'
   
         - name: Ajouter compileSdkVersion si manquant
