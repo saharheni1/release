@@ -75,6 +75,6 @@ jobs:
 
       - name: Notify n8n webhook
         run: |
-          curl -X POST https://oumahl.app.n8n.cloud/webhook/apk-notify \
+          curl -X POST https://oumahl.app.n8n.cloud/webhook/apk-upload \
             -H "Content-Type: application/json" \
             -d '{"status":"success","message":"Android release build completed"}'
