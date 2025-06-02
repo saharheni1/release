@@ -72,3 +72,9 @@ jobs:
             cat /tmp/response.txt
             exit 1
           fi
+
+      - name: Notify n8n webhook
+        run: |
+          curl -X POST https://oumahl.app.n8n.cloud/webhook/apk-notify \
+            -H "Content-Type: application/json" \
+            -d '{"status":"success","message":"Android release build completed"}'
