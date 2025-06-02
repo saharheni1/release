@@ -63,7 +63,7 @@ jobs:
         run: |
           response=$(curl -s -w "%{http_code}" -o /tmp/response.txt \
             -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
-            https://oumahl.app.n8n.cloud/webhook/apk-upload)
+            https://oumahl.app.n8n.cloud/webhook-test/apk-upload)
 
           if [[ "$response" == "200" ]]; then
             echo "✅ APK uploaded successfully"
@@ -75,6 +75,6 @@ jobs:
 
       - name: Notify n8n webhook
         run: |
-          curl -X POST https://oumahl.app.n8n.cloud/webhook/apk-upload \
+          curl -X POST https://oumahl.app.n8n.cloud/webhook-test/apk-upload \
             -H "Content-Type: application/json" \
             -d '{"status":"success","message":"Android release build completed"}'
