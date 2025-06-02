@@ -59,19 +59,11 @@ jobs:
           path: android/app/build/outputs/apk/release/*.apk
           retention-days: 7
 
-      - name: Upload APK to analysis system
+      - name: Upload APK to analysis system (verbose)
         run: |
-          response=$(curl -s -w "%{http_code}" -o /tmp/response.txt \
-            -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
-            https://oumahl.app.n8n.cloud/webhook/apk-upload)
-
-          if [[ "$response" == "200" ]]; then
-            echo "✅ APK uploaded successfully"
-          else
-            echo "❌ Upload failed with status code $response"
-            cat /tmp/response.txt
-            exit 1
-          fi
+          echo "Uploading APK to n8n..."
+          curl -v -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
+            https://oumahl.app.n8n.cloud/webhook/apk-upload
 
       - name: Notify n8n webhook
         run: |
