@@ -63,5 +63,5 @@ jobs:
         run: |
           curl -X POST \
             -H "Content-Type: multipart/form-data" \
-            -F "file=@app/build/outputs/apk/release/app-release.apk" \
+            -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
             https://oumahl.app.n8n.cloud/webhook/apk-upload
