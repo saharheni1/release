@@ -1,4 +1,4 @@
-name: Android Release Build
+name: Android Release Workflow
 
 on:
   workflow_dispatch:
@@ -59,14 +59,9 @@ jobs:
           path: android/app/build/outputs/apk/release/*.apk
           retention-days: 7
 
-      - name: Upload APK to analysis system (verbose)
+      - name: Upload APK to analysis system
         run: |
           echo "Uploading APK to n8n..."
-          curl -v -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
+          curl -X POST -H "Content-Type: multipart/form-data" \
+            -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
             https://oumahl.app.n8n.cloud/webhook/apk-upload
-
-      - name: Notify n8n webhook
-        run: |
-          curl -X POST https://oumahl.app.n8n.cloud/webhook/apk-upload \
-            -H "Content-Type: application/json" \
-            -d '{"status":"success","message":"Android release build completed"}'
